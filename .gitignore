@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+
+# Generated outputs
+figures/
+reports/
+
+# Intermediate data files (keep only user_metrics.csv)
+data/assignments.csv
+data/events.csv
+data/experiment_metrics.csv
+data/users.csv
+
+# Env / secrets
+.env
+*.env
+
+# macOS
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
