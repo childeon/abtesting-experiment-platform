@@ -22,7 +22,7 @@ def plot_primary_metric(frequentist_result, output_path):
     ]
 
     fig, ax = plt.subplots(figsize=(7, 4.5))
-    bars = ax.bar(variants, rates, color=["#5B6770", "#2F80ED"])
+    bars = ax.bar(variants, rates, color=["#6C8079", "#0E7A64"])
     _style_axes(ax, "Day-7 Retention by Variant", "Retention rate (%)")
 
     for bar, rate in zip(bars, rates):
@@ -43,7 +43,7 @@ def plot_primary_metric(frequentist_result, output_path):
         f"Lift: {lift:+.2f}pp\np-value: {p_value:.4f}",
         ha="center",
         va="center",
-        bbox={"boxstyle": "round,pad=0.35", "facecolor": "white", "edgecolor": "#D0D5DD"},
+        bbox={"boxstyle": "round,pad=0.35", "facecolor": "white", "edgecolor": "#CFE0D6"},
     )
 
     fig.tight_layout()
@@ -70,7 +70,7 @@ def plot_guardrails(experiment_metrics, output_path):
         bars = ax.bar(
             ["Control", "Treatment"],
             [plot_values["control"], plot_values["treatment"]],
-            color=["#5B6770", "#2F80ED"],
+            color=["#6C8079", "#0E7A64"],
         )
         _style_axes(ax, title)
 
@@ -105,12 +105,12 @@ def plot_segment_lift(segment_effects, output_path):
         for row in rows
     ]
     lifts = [row["absolute_lift"] * 100 for row in rows]
-    colors = ["#2F80ED" if lift >= 0 else "#D64545" for lift in lifts]
+    colors = ["#0E7A64" if lift >= 0 else "#C1584A" for lift in lifts]
     y_positions = np.arange(len(rows))
 
     fig, ax = plt.subplots(figsize=(8, 5))
     ax.barh(y_positions, lifts, color=colors)
-    ax.axvline(0, color="#344054", linewidth=1)
+    ax.axvline(0, color="#6C8079", linewidth=1)
     ax.set_yticks(y_positions)
     ax.set_yticklabels(labels, fontsize=9)
     _style_axes(ax, "Day-7 Retention Lift by Segment", "Absolute lift (pp)")
@@ -140,7 +140,7 @@ def plot_peeking_false_positive_rates(peeking_result, output_path):
     ]
 
     fig, ax = plt.subplots(figsize=(7, 4.5))
-    bars = ax.bar(labels, rates, color=["#5B6770", "#D64545"])
+    bars = ax.bar(labels, rates, color=["#6C8079", "#C1584A"])
     _style_axes(ax, "False Positive Inflation from Peeking", "False positive rate (%)")
 
     for bar, rate in zip(bars, rates):
@@ -159,7 +159,7 @@ def plot_peeking_false_positive_rates(peeking_result, output_path):
         f"Inflation: {peeking_result['inflation_factor']:.1f}x",
         ha="center",
         va="center",
-        bbox={"boxstyle": "round,pad=0.35", "facecolor": "white", "edgecolor": "#D0D5DD"},
+        bbox={"boxstyle": "round,pad=0.35", "facecolor": "white", "edgecolor": "#CFE0D6"},
     )
 
     fig.tight_layout()

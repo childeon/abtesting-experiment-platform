@@ -24,12 +24,12 @@ from src.segments import analyze_segment_effects
 
 
 DEMO_DATA_PATH = os.path.join(os.path.dirname(__file__), "data", "user_metrics.csv")
-COLOR_CONTROL = "#94A3B8"
-COLOR_TREATMENT = "#818CF8"
-COLOR_POSITIVE = "#34D399"
-COLOR_NEGATIVE = "#F87171"
-COLOR_NEUTRAL = "#64748B"
-COLOR_AMBER = "#FBBF24"
+COLOR_CONTROL = "#6C8079"
+COLOR_TREATMENT = "#0E7A64"
+COLOR_POSITIVE = "#1B9E7F"
+COLOR_NEGATIVE = "#C1584A"
+COLOR_NEUTRAL = "#52685D"
+COLOR_AMBER = "#C7A03D"
 PT = "plotly_dark"
 
 st.set_page_config(
@@ -42,38 +42,124 @@ st.set_page_config(
 st.markdown(
     """
 <style>
-[data-testid="stAppViewContainer"] { background: #0F172A; }
-[data-testid="stSidebar"] {
-    background: #1E293B;
-    border-right: 1px solid #334155;
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500..900&family=Outfit:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+html { scroll-behavior: smooth; }
+
+[data-testid="stAppViewContainer"] {
+    background: #090F0D;
+    position: relative;
 }
+[data-testid="stAppViewContainer"]::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.035;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+html, body, [class*="css"] {
+    font-family: 'Outfit', -apple-system, sans-serif;
+    color: #E8F1EE;
+}
+
+h1, h2, h3, .hero h1 {
+    font-family: 'Fraunces', Georgia, serif;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+}
+
+p, li, .stMarkdown, [data-testid="stCaptionContainer"] {
+    font-variant-numeric: tabular-nums;
+}
+
+[data-testid="stMetricValue"] {
+    font-family: 'IBM Plex Mono', monospace;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.01em;
+}
+
+[data-testid="stSidebar"] {
+    background: #0F1C18;
+    border-right: 1px solid #1C3A32;
+}
+[data-testid="stSidebar"] .stRadio label {
+    padding: 6px 10px;
+    border-radius: 4px;
+    transition: background-color 150ms ease, padding-left 150ms ease;
+}
+[data-testid="stSidebar"] .stRadio label:hover {
+    background: #12241D;
+    padding-left: 14px;
+}
+
 .hero {
-    background: linear-gradient(135deg, #1E293B 0%, #0F172A 100%);
-    border: 1px solid #334155;
-    border-radius: 16px;
+    background: linear-gradient(155deg, #0F1C18 0%, #090F0D 100%);
+    border: 1px solid #1C3A32;
+    border-radius: 6px;
     padding: 40px 48px;
     margin-bottom: 24px;
+    box-shadow: 0 16px 40px -20px rgba(0, 0, 0, 0.6);
+    position: relative;
+    z-index: 1;
 }
-.hero h1 { font-size: 2.8rem; font-weight: 800; margin: 0 0 8px; color: #F1F5F9; }
-.hero p  { font-size: 1.05rem; color: #94A3B8; margin: 0; }
+.hero h1 {
+    font-size: 3rem;
+    font-weight: 800;
+    margin: 0 0 10px;
+    color: #E8F1EE;
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+}
+.hero p  { font-size: 1.05rem; color: #86A69B; margin: 0; max-width: 60ch; line-height: 1.5; }
+
 .decision-banner {
-    border-radius: 16px;
+    border-radius: 6px;
     padding: 32px 40px;
     text-align: center;
     margin-bottom: 24px;
+    box-shadow: 0 16px 40px -20px rgba(0, 0, 0, 0.6);
 }
+
 .badge {
-    display: inline-block;
-    padding: 3px 14px;
-    border-radius: 9999px;
-    font-size: 0.8rem;
-    font-weight: 700;
-    letter-spacing: 0.05em;
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 10px;
+    border-radius: 4px;
+    border-left: 3px solid transparent;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.03em;
 }
-.badge-pass   { background: #064e3b; color: #6ee7b7; }
-.badge-fail   { background: #7f1d1d; color: #fca5a5; }
-.badge-warn   { background: #78350f; color: #fcd34d; }
-.badge-neutral{ background: #1e293b; color: #94a3b8; border: 1px solid #334155; }
+.badge-pass   { background: #0F241D; color: #7FD4B8; border-left-color: #1B9E7F; }
+.badge-fail   { background: #2A1712; color: #E2A192; border-left-color: #C1584A; }
+.badge-warn   { background: #241E10; color: #DDBE6E; border-left-color: #C7A03D; }
+.badge-neutral{ background: #0F1C18; color: #86A69B; border-left-color: #1C3A32; }
+
+.stButton button, .stDownloadButton button {
+    transition: transform 150ms ease, box-shadow 150ms ease, background-color 150ms ease;
+}
+.stButton button:hover, .stDownloadButton button:hover {
+    box-shadow: 0 6px 18px -8px rgba(14, 122, 100, 0.45);
+}
+.stButton button:active, .stDownloadButton button:active {
+    transform: scale(0.98);
+}
+
+button:focus-visible, [role="radio"]:focus-visible, input:focus-visible {
+    outline: 2px solid #0E7A64;
+    outline-offset: 2px;
+}
+
+.stTabs [data-baseweb="tab"] {
+    transition: color 150ms ease;
+}
+.stTabs [aria-selected="true"] {
+    color: #0E7A64 !important;
+}
 </style>
 """,
     unsafe_allow_html=True,
@@ -171,45 +257,38 @@ if page == "Home":
         unsafe_allow_html=True,
     )
 
-    c1, c2, c3 = st.columns(3)
-    with c1:
-        st.markdown("**Experiment Design**")
-        st.markdown(
-            "Power analysis and sample size calculation with sensitivity curves. "
-            "Know your required sample before you ship a single user."
-        )
-    with c2:
-        st.markdown("**Data Validation**")
-        st.markdown(
-            "Sample ratio mismatch detection (chi-square) and A/A test simulation "
-            "to verify your randomization infrastructure is sound."
-        )
-    with c3:
-        st.markdown("**Statistical Analysis**")
-        st.markdown(
-            "Frequentist (z-test + CIs) and Bayesian (Beta-Binomial posteriors) "
-            "analysis side by side. Guardrail metric monitoring included."
-        )
-
-    c4, c5, c6 = st.columns(3)
-    with c4:
-        st.markdown("**Sequential Testing**")
-        st.markdown(
-            "O'Brien-Fleming boundaries tell you the z-statistic threshold "
-            "required to stop early at each planned look without inflating your false positive rate."
-        )
-    with c5:
-        st.markdown("**Segment Analysis**")
-        st.markdown(
-            "Break down treatment effects by country, platform, user segment, "
-            "or any categorical feature. Catch effects hidden by the average."
-        )
-    with c6:
-        st.markdown("**Decision Summary**")
-        st.markdown(
-            "Automated ship / hold / no-ship recommendation synthesizing the "
-            "primary metric, guardrails, and Bayesian corroboration."
-        )
+    _features = [
+        ("Experiment Design", "Power analysis and sample size calculation with sensitivity "
+         "curves. Know your required sample before you ship a single user.", 0),
+        ("Data Validation", "Sample ratio mismatch detection (chi-square) and A/A test "
+         "simulation to verify your randomization infrastructure is sound.", 28),
+        ("Statistical Analysis", "Frequentist (z-test + CIs) and Bayesian (Beta-Binomial "
+         "posteriors) analysis side by side. Guardrail metric monitoring included.", 0),
+        ("Sequential Testing", "O'Brien-Fleming boundaries tell you the z-statistic threshold "
+         "required to stop early at each planned look without inflating your false positive rate.", 28),
+        ("Segment Analysis", "Break down treatment effects by country, platform, user segment, "
+         "or any categorical feature. Catch effects hidden by the average.", 0),
+        ("Decision Summary", "Automated ship / hold / no-ship recommendation synthesizing the "
+         "primary metric, guardrails, and Bayesian corroboration.", 28),
+    ]
+    _rows = "".join(
+        f"""
+        <div style="display:flex; gap:28px; padding:22px 0; margin-left:{indent}px;
+                    border-top:1px solid #1C3A32;">
+            <div style="font-family:'IBM Plex Mono',monospace; font-size:0.85rem;
+                        color:#5A5145; padding-top:4px; min-width:28px;">
+                {i + 1:02d}
+            </div>
+            <div style="max-width:52ch;">
+                <div style="font-family:'Fraunces',serif; font-weight:700; font-size:1.15rem;
+                            color:#E8F1EE; margin-bottom:4px;">{title}</div>
+                <div style="color:#86A69B; font-size:0.95rem; line-height:1.55;">{desc}</div>
+            </div>
+        </div>
+        """
+        for i, (title, desc, indent) in enumerate(_features)
+    )
+    st.markdown(_rows, unsafe_allow_html=True)
 
     st.divider()
 
@@ -1564,25 +1643,25 @@ elif page == "Decision Summary":
 
     if guardrail_breached:
         decision = "NO-SHIP"
-        bg, border, tc = "#7f1d1d", "#DC2626", "#fca5a5"
+        bg, border, tc = "#2A1712", "#C1584A", "#E2A192"
         rationale = "One or more guardrail metrics are significantly degraded. Investigate before shipping."
     elif primary_sig and primary_pos:
         decision = "SHIP"
-        bg, border, tc = "#064e3b", "#10B981", "#6ee7b7"
+        bg, border, tc = "#0F241D", "#1B9E7F", "#7FD4B8"
         rationale = f"Primary metric ({primary_metric}) improved significantly. No guardrails breached."
     elif primary_sig and not primary_pos:
         decision = "NO-SHIP"
-        bg, border, tc = "#7f1d1d", "#DC2626", "#fca5a5"
+        bg, border, tc = "#2A1712", "#C1584A", "#E2A192"
         rationale = f"Primary metric ({primary_metric}) declined significantly."
     else:
         decision = "HOLD"
-        bg, border, tc = "#78350f", "#F59E0B", "#fcd34d"
+        bg, border, tc = "#241E10", "#C7A03D", "#DDBE6E"
         rationale = "Primary metric did not reach statistical significance. Collect more data or re-evaluate the MDE."
 
     st.markdown(
         f"""
         <div class="decision-banner" style="background:{bg}; border: 2px solid {border};">
-            <div style="font-size:2.4rem; font-weight:800; color:{tc}; letter-spacing:0.12em;">{decision}</div>
+            <div style="font-family:'Fraunces',serif; font-size:2.6rem; font-weight:800; color:{tc}; letter-spacing:-0.01em;">{decision}</div>
             <div style="color:{tc}; margin-top:8px; font-size:0.95rem;">{rationale}</div>
         </div>
         """,
